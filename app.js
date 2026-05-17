@@ -405,6 +405,10 @@ async function saveDSA() {
   const difficulty = document.getElementById("dsa-difficulty").value;
   const status = document.getElementById("dsa-status").value;
 
+  const tags = Array.from(
+  document.querySelectorAll('#tags-wrap .tag-removable')
+).map(el => el.textContent.replace('×','').trim());
+
   if (!name) {
     showToast("Enter problem name");
     return;
@@ -414,7 +418,7 @@ async function saveDSA() {
   if (!user) return;
 
   if (editDsaId) {
-    // 🔥 UPDATE EXISTING
+    // 🔥 UPDATE
     await updateDoc(
       doc(db, "users", user.uid, "dsa", editDsaId),
       {
@@ -422,14 +426,15 @@ async function saveDSA() {
         platform,
         topic,
         difficulty,
-        status
+        status,
+        tags // 🔥 ADD THIS
       }
     );
 
     showToast("Problem updated");
 
   } else {
-    // 🔥 CREATE NEW
+    // 🔥 CREATE
     await addDoc(
       collection(db, "users", user.uid, "dsa"),
       {
@@ -438,6 +443,7 @@ async function saveDSA() {
         topic,
         difficulty,
         status,
+        tags, // 🔥 ADD THIS
         createdAt: Date.now()
       }
     );
@@ -447,6 +453,7 @@ async function saveDSA() {
 
   editDsaId = null;
   closeModal("dsa-modal");
+  console.log("Saving tags:", currentTags);
 }
 
 function loadDSAFromFirestore() {
@@ -498,11 +505,16 @@ async function deleteDSA(id) {
 function handleTagInput(e) {
   if (e.key === 'Enter' || e.key === ',') {
     e.preventDefault();
+
     const val = e.target.value.replace(',', '').trim();
-    if (val && !currentTags.includes(val)) { currentTags.push(val); renderTagsInput(); }
+
+    if (val && !currentTags.includes(val)) {
+      currentTags.push(val);
+      console.log("Added tag:", currentTags); // debug
+    }
+
     e.target.value = '';
-  } else if (e.key === 'Backspace' && !e.target.value && currentTags.length) {
-    currentTags.pop(); renderTagsInput();
+    renderTagsInput();
   }
 }
 
@@ -515,7 +527,10 @@ function renderTagsInput() {
   currentTags.forEach((tag, i) => {
     const chip = document.createElement('span');
     chip.className = 'tag-removable';
-    chip.innerHTML = `${esc(tag)}<button class="tag-remove" onclick="removeTag(${i})">×</button>`;
+   chip.innerHTML = `
+  ${esc(tag)}
+  <button class="tag-remove" onclick="removeTag(${i})">×</button>
+`;
     wrap.appendChild(chip);
   });
   wrap.appendChild(input);
@@ -575,8 +590,6 @@ updateLandingStats();
 
 
 
-
-
 // Expose functions to global scope for inline event handlers
 window.showPage = showPage;
 window.openAppModal = openAppModal;
@@ -594,3 +607,4 @@ window.removeTag = removeTag;
 window.sortApps = sortApps;
 window.sortDSA = sortDSA;
 window.renderDSA = renderDSA;
+window.showPage = showPage;
