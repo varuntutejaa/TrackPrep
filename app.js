@@ -14,7 +14,7 @@ let editAppId = null;
 let editDsaId = null
 let currentTags = [];  
 let dsaList = [];
-
+let unsubscribeDSA = null;
 let appSort = { key: 'date', dir: 'desc' };
 let dsaSort = { key: 'name', dir: 'asc'  };
 
@@ -413,20 +413,42 @@ async function saveDSA() {
   const user = auth.currentUser;
   if (!user) return;
 
-  // 🔥 FIRESTORE SAVE
-  await addDoc(collection(db, "users", user.uid, "dsa"), {
-    name,
-    platform,
-    topic,
-    difficulty,
-    status,
-    createdAt: Date.now()
-  });
+  if (editDsaId) {
+    // 🔥 UPDATE EXISTING
+    await updateDoc(
+      doc(db, "users", user.uid, "dsa", editDsaId),
+      {
+        name,
+        platform,
+        topic,
+        difficulty,
+        status
+      }
+    );
 
+    showToast("Problem updated");
+
+  } else {
+    // 🔥 CREATE NEW
+    await addDoc(
+      collection(db, "users", user.uid, "dsa"),
+      {
+        name,
+        platform,
+        topic,
+        difficulty,
+        status,
+        createdAt: Date.now()
+      }
+    );
+
+    showToast("Problem added");
+  }
+
+  editDsaId = null;
   closeModal("dsa-modal");
-  showToast("Problem added");
 }
-let unsubscribeDSA = null;
+
 function loadDSAFromFirestore() {
   const user = auth.currentUser;
   if (!user) return;
