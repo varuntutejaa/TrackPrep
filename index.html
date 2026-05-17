@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrackPrep — Your Interview Prep Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav>
+    <a class="nav-logo" href="#" onclick="showPage('landing')">
+      Track<span class="dot">.</span>Prep
+    </a>
+    <div class="nav-links">
+      <div class="nav-link active" data-page="landing"       onclick="showPage('landing')">Home</div>
+      <div class="nav-link"        data-page="applications"  onclick="showPage('applications')">Applications</div>
+      <div class="nav-link"        data-page="dsa"           onclick="showPage('dsa')">DSA</div>
+    </div>
+    <div id="authSection" class="nav-auth">
+  <button id="loginBtn" class="nav-cta" onclick="window.location.href='login.html'">Login</button>
+
+  <div id="userInfo" style="display:none;">
+    <div id="userName"></div>
+    <div id="userEmail" style="font-size:12px;opacity:0.7;"></div>
+    <button onclick="logout()" class="logout-btn">Logout</button>
+  </div>
+</div>
+  </nav>
+  <div id="page-landing" class="page active">
+    <section class="hero">
+      <div class="container" style="display:flex;flex-direction:column;align-items:center">
+        <h1 class="hero-title">
+          TRACK<br>
+          <span class="line2">YOUR <span class="accent">PREP</span></span>
+        </h1>
+        <p class="hero-sub">
+          One dashboard for job applications and DSA practice.
+          Stay organised, spot patterns, land the offer.
+        </p>
+        <div class="hero-actions">
+          <button class="btn-hero-primary"   onclick="showPage('applications')">
+            Track Applications →
+          </button>
+          <button class="btn-hero-secondary" onclick="showPage('dsa')">
+            Track DSA Problems
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="howitworks-section">
+      <div class="container">
+        <p class="section-eyebrow">Simple by design</p>
+        <h2 class="section-heading">Three steps. That's it.</h2>
+
+        <div class="steps-grid">
+
+          <div class="step-card">
+            <div class="step-number">01</div>
+            <div class="step-title">Open a tracker</div>
+            <p class="step-desc">
+              Choose Applications or DSA from the nav. Your data loads instantly from Database.
+            </p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">02</div>
+            <div class="step-title">Add your entries</div>
+            <p class="step-desc">
+              Hit "+ Add" to open the form. Fill in the details. Save. It's in the table immediately.
+            </p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">03</div>
+            <div class="step-title">Search & filter</div>
+            <p class="step-desc">
+              Use the search bar or dropdown filters to find any entry. Update status in one click.
+            </p>
+          </div>
+
+        </div>
+
+        <div class="cta-band">
+          <div>
+            <div class="cta-band-title">Ready to start tracking?</div>
+          </div>
+          <div style="display:flex;gap:12px;flex-shrink:0">
+            <button class="btn-hero-primary"   onclick="showPage('applications')">Track Applications</button>
+            <button class="btn-hero-secondary" onclick="showPage('dsa')">Track DSA</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- Site footer -->
+    <footer class="site-footer">
+      <div class="container">
+        <strong>TrackPrep </strong> - Built by Varun Tuteja
+      </div>
+    </footer>
+
+  </div>
+  <!-- end page-landing -->
+
+  <div id="page-applications" class="page">
+    <div class="container" style="padding-top:88px;padding-bottom:4rem">
+
+      <!-- Section heading + entry count badge -->
+      <div class="section-header">
+        <div class="page-title">Applications</div>
+        <div class="page-count" id="app-count-label">0 entries</div>
+      </div>
+
+      <!-- Stat cards — injected by renderApps() in app.js -->
+      <div class="stats-row" id="app-stats"></div>
+
+      <!-- Toolbar: search + filter + add button -->
+      <div class="toolbar">
+        <div class="search-wrap">
+          <span class="search-icon">⌕</span>
+          <input
+            type="text"
+            id="app-search"
+            placeholder="Search company or role…"
+            oninput="renderApps()"
+          />
+        </div>
+
+        <!-- Status filter — "All Status" shows everything -->
+        <select id="app-filter" onchange="renderApps()">
+          <option value="">All Status</option>
+          <option>Applied</option>
+          <option>OA</option>
+          <option>Interview</option>
+          <option>Rejected</option>
+          <option>Accepted</option>
+        </select>
+
+        <button class="btn-primary" onclick="openAppModal()">+ Add Application</button>
+      </div>
+
+      <!-- Data table -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <!--
+                data-sort + onclick: clicking a header sorts by that column.
+                The ↕ / ↑ / ↓ arrows are added by CSS.
+              -->
+              <th data-sort="company" onclick="sortApps('company')">Company</th>
+              <th data-sort="role"    onclick="sortApps('role')">Role</th>
+              <th>Status</th>
+              <th data-sort="date"    onclick="sortApps('date')">Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="app-table-body">
+            <!-- Rows are built and injected here by renderApps() -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+  <!-- end page-applications -->
+
+
+  <!-- ════════════════════════════════════════════════════════
+    PAGE 3 — DSA TRACKER
+    ════════════════════════════════════════════════════════ -->
+  <div id="page-dsa" class="page">
+    <div class="container" style="padding-top:88px;padding-bottom:4rem">
+
+      <div class="section-header">
+        <div class="page-title">DSA Practice</div>
+        <div class="page-count" id="dsa-count-label">0 problems</div>
+      </div>
+
+      <!-- Stat cards — injected by renderDSA() -->
+      <div class="stats-row" id="dsa-stats"></div>
+
+      <!-- Toolbar with three filters + search -->
+      <div class="toolbar">
+        <div class="search-wrap">
+          <span class="search-icon">⌕</span>
+
+          <input
+            type="text"
+            id="dsa-search"
+            placeholder="Search name, topic, or tags…"
+            oninput="renderDSA()"
+          />
+        </div>
+
+        <select id="dsa-filter-platform" onchange="renderDSA()">
+          <option value="">All Platforms</option>
+          <option>LeetCode</option>
+          <option>Codeforces</option>
+          <option>CodeChef</option>
+        </select>
+
+        <select id="dsa-filter-status" onchange="renderDSA()">
+          <option value="">All Status</option>
+          <option>Solved</option>
+          <option>Revision</option>
+        </select>
+
+        <select id="dsa-filter-diff" onchange="renderDSA()">
+          <option value="">All Difficulty</option>
+          <option>Easy</option>
+          <option>Medium</option>
+          <option>Hard</option>
+        </select>
+
+        <button class="btn-primary" onclick="openDsaModal()">+ Add Problem</button>
+      </div>
+
+      <!-- DSA table -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-sort="name" onclick="sortDSA('name')">Problem</th>
+              <th>Platform</th>
+              <th>Topic</th>
+              <th>Difficulty</th>
+              <th>Status</th>
+              <th>Tags</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="dsa-table-body">
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="app-modal">
+    <div class="modal">
+
+      <div class="modal-header">
+        <!-- JS updates this between "New Application" / "Edit Application" -->
+        <div class="modal-title" id="app-modal-title">New Application</div>
+        <button class="modal-close" onclick="closeModal('app-modal')">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-row">
+          <label>Company Name</label>
+          <input type="text" id="app-company" placeholder="e.g. Google, Atlassian…" />
+        </div>
+        <div class="form-row">
+          <label>Role</label>
+          <input type="text" id="app-role" placeholder="e.g. Software Engineer Intern" />
+        </div>
+        <div class="form-2col">
+          <div class="form-row">
+            <label>Status</label>
+            <select id="app-status">
+              <option>Applied</option>
+              <option>OA</option>
+              <option>Interview</option>
+              <option>Rejected</option>
+              <option>Accepted</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>Date Applied</label>
+            <!-- type="date" shows a native browser date picker -->
+            <input type="date" id="app-date" />
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('app-modal')">Cancel</button>
+        <!-- JS changes text between "Save Application" / "Update" -->
+        <button class="btn-primary" id="app-save-btn" onclick="saveApp()">Save Application</button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="dsa-modal">
+    <div class="modal">
+
+      <div class="modal-header">
+        <div class="modal-title" id="dsa-modal-title">New Problem</div>
+        <button class="modal-close" onclick="closeModal('dsa-modal')">×</button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="form-row">
+          <label>Question Name</label>
+          <input type="text" id="dsa-name" placeholder="e.g. Longest Substring Without Repeating" />
+        </div>
+
+        <div class="form-2col">
+          <div class="form-row">
+            <label>Platform</label>
+            <select id="dsa-platform">
+              <option>LeetCode</option>
+              <option>Codeforces</option>
+              <option>CodeChef</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>Topic</label>
+            <input type="text" id="dsa-topic" placeholder="e.g. Sliding Window" />
+          </div>
+        </div>
+
+        <div class="form-2col">
+          <div class="form-row">
+            <label>Difficulty</label>
+            <select id="dsa-difficulty">
+              <option>Easy</option>
+              <option>Medium</option>
+              <option>Hard</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>Status</label>
+            <select id="dsa-status">
+              <option>Solved</option>
+              <option>Revision</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Tags — press Enter or comma to add</label>
+          <div
+            class="tags-input-wrap"
+            id="tags-wrap"
+            onclick="document.getElementById('tag-input-field').focus()"
+          >
+            <input
+              type="text"
+              id="tag-input-field"
+              placeholder="type and press Enter…"
+              onkeydown="handleTagInput(event)"
+            />
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('dsa-modal')">Cancel</button>
+        <button class="btn-primary" id="dsa-save-btn" onclick="saveDSA()">Save Problem</button>
+      </div>
+
+    </div>
+  </div>
+  <div id="toast"></div>
+  <script type="module" src="dashboard.js"></script>
+<script type="module" src="app.js"></script>
+
+</body>
+</html>
