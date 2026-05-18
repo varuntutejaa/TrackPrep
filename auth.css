@@ -239,6 +239,14 @@ input.has-error:focus { box-shadow: 0 0 0 3px rgba(255, 82, 82, 0.12); }
 }
 .toggle-pw svg { width: 16px; height: 16px; }
 .toggle-pw:hover { color: var(--gold); }
+.toggle-pw {
+  color: var(--muted);
+  transition: 0.2s;
+}
+
+.toggle-pw:hover {
+  color: var(--text);
+}
 
 
 .field-error {
@@ -535,4 +543,23 @@ input.has-error:focus { box-shadow: 0 0 0 3px rgba(255, 82, 82, 0.12); }
 .google-btn-wrapper {
   display: flex;
   justify-content: center;
+}
+.forgot-link {
+  background: none;
+  border: none;
+  padding: 0;
+
+  color: #f5a623; /* your yellow */
+  font-size: 12px;
+  cursor: pointer;
+
+  text-decoration: none;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+  color: #ffb74d;
+}
+.form-row {
+  justify-content: flex-end;
 }
