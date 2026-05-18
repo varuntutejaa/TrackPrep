@@ -167,13 +167,14 @@ function renderApps() {
 
   // Read toolbar inputs
   const query  = document.getElementById('app-search').value.toLowerCase();
-  const filter = document.getElementById('app-filter').value;
+ const filter = document.getElementById('app-filter').value;
 
   // Filter
   let rows = applications.filter(a => {
     const matchQ = !query  || a.company.toLowerCase().includes(query) || a.role.toLowerCase().includes(query);
     const matchF = !filter || a.status === filter;
     return matchQ && matchF;
+    console.log("FILTER VALUE:", filter);
   });
 
   // Sort
@@ -608,3 +609,4 @@ window.sortApps = sortApps;
 window.sortDSA = sortDSA;
 window.renderDSA = renderDSA;
 window.showPage = showPage;
+window.renderApps = renderApps;
